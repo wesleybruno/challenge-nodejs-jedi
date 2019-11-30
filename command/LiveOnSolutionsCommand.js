@@ -38,7 +38,6 @@ module.exports = new class Order {
                 }
 
             });
-
             return valorTotal
         }catch(e){
             console.error(e.toString())
@@ -53,8 +52,24 @@ module.exports = new class Order {
             const arrayData = await service.getJsonData()
 
             const arrayStatus = this._getAllStatus(arrayData)
+            
+            const somatorio = {}
+            const arrayPromises = []
 
-            return arrayStatus
+            arrayStatus.forEach( (element, index) => {
+                somatorio[index] = element
+                arrayPromises.push(this.orderTotal(element))
+            });
+
+            const promiseResponse = await Promise.all(arrayPromises)
+
+            const retorno = {}
+
+            promiseResponse.forEach( (response, index) =>{
+                retorno[somatorio[index]] = response
+            })
+
+            return retorno
         } catch(e) {
             console.error(e.toString())
             return false

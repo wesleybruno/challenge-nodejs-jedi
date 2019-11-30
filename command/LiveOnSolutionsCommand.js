@@ -1,11 +1,13 @@
 const dataService = require('./../services/DataService')
-
+const _ = require('lodash')
 
 exports.orderByStatus = async () => {
     try{
         const service = require('./../services/DataService')
-        const data = await service.getJsonData()
-        return data
+        const arrayData = await service.getJsonData()
+        
+        const arrayOrdened = _.orderBy(arrayData, ['status'],['asc'])
+        return arrayOrdened
     } catch(e){
         console.error(e.toString())
         return false

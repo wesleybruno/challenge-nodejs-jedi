@@ -9,7 +9,6 @@ exports.getJsonData = async () => {
             return jsonData
 
         const response  = await axios.get('https://raw.githubusercontent.com/LiveOnSolutions/challenge-nodejs-jedi/master/chaotic_data.json')
-       
 
         fs.writeFile('dataJson.json', JSON.stringify(data), (err) => {
             if (err) throw err;

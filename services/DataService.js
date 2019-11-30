@@ -23,6 +23,7 @@ exports.getJsonData = async () => {
 
     } catch(e){
         console.error('Erro ao buscar dados no servidor', e.toString())
+        return []
     }
 
 };

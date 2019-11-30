@@ -78,7 +78,36 @@ module.exports = new class Order {
 
     
     async groupByCountry() {
-        return new Error('Not Impremented yet')
+        try{
+            const service = require('./../services/DataService')
+            const arrayData = await service.getJsonData()
+
+            const uniqueCountrys = this._getAllCountrys(arrayData)
+            const mapCountry =  this._getMapCountry(uniqueCountrys)
+
+            const retorno = this._mountReturnArray(uniqueCountrys)
+
+            arrayData.forEach( element => {
+
+                if(element.shipping && element.shipping.country){
+                  
+                    let countryIndex = mapCountry[element.shipping.country.name]
+
+                    let countryObject = retorno[countryIndex]
+
+                    countryObject.orders.push(element)
+
+                }
+                
+            });
+
+         
+            return retorno
+            
+        } catch(e) {
+            console.error(e.toString())
+            return false
+        }
     };
 
     _getAllStatus(data) {
@@ -91,6 +120,54 @@ module.exports = new class Order {
             return arrayUnique
 
         } catch(e){
+            return []
+        }
+    }
+
+    _getAllCountrys(data){
+        try{
+
+            const arrayCountrys = data.map( element => element.shipping.country.name)
+
+            const arrayUnique = [...new Set(arrayCountrys)]
+
+            return arrayUnique
+
+        } catch(e){
+            return []
+        }
+    }
+
+    _getMapCountry(arrayCountrys){
+        try{
+            const retorno = {}
+
+            arrayCountrys.forEach( (country, index) => {
+                retorno[country] = index
+            });
+
+            return retorno
+
+        } catch(e){
+            return {}
+        }
+
+    }
+
+    _mountReturnArray(mapCountry){
+        try{
+            const retorno = []
+            
+            mapCountry.forEach(element => {
+                let obj = {
+                    country: element,
+                    orders: []
+                }
+                retorno.push(obj)
+            });
+
+            return retorno
+        }catch(e){
             return []
         }
     }

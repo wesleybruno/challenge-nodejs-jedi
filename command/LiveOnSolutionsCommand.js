@@ -53,28 +53,35 @@ module.exports = new class Order {
 
             const arrayStatus = this._getAllStatus(arrayData)
             
-            const somatorio = {}
-            const arrayPromises = []
-
-            arrayStatus.forEach( (element, index) => {
-                somatorio[index] = element
-                arrayPromises.push(this.orderTotal(element))
-            });
-
-            const promiseResponse = await Promise.all(arrayPromises)
-
-            const retorno = {}
-
-            promiseResponse.forEach( (response, index) =>{
-                retorno[somatorio[index]] = response
-            })
-
-            return retorno
+            const quantidades = await this._getAllStatusQuantidade(arrayStatus)
+            return quantidades
+            
         } catch(e) {
             console.error(e.toString())
             return false
         }
     };
+
+    async _getAllStatusQuantidade(arrayStatus){
+        const retorno = []
+        await this._asyncForEach(arrayStatus, element =>
+            this.orderTotal(element).then( response => {
+                let obj = {}
+                obj.status = element
+                obj.quantidade = response 
+
+                retorno.push(obj)
+            })
+        )
+        return retorno
+    }
+
+    
+    async _asyncForEach(array, callback) {
+        for (let index = 0; index < array.length; index++) {
+            await callback(array[index], index, array)
+        }
+    }
 
     
     async groupByCountry() {
@@ -109,6 +116,24 @@ module.exports = new class Order {
             return false
         }
     };
+    
+    // _mountReturn(arrayStatus){
+    //     try{
+    //         const retorno = []
+            
+    //         arrayStatus.forEach(element => {
+    //             let obj = {
+    //                 status: element,
+    //                 quantidade: 0
+    //             }
+    //             retorno.push(obj)
+    //         });
+
+    //         return retorno
+    //     }catch(e){
+    //         return []
+    //     }
+    // }
 
     _getAllStatus(data) {
         try{

@@ -1,6 +1,6 @@
 const dataService = require('./../services/DataService')
 const _ = require('lodash')
-
+const utils = require('./../helpers/Utils')
 module.exports = new class Order {
     
     async orderByStatus() {
@@ -45,7 +45,6 @@ module.exports = new class Order {
         }
     };
 
-
     async orderMajorValue() {
         try{
             const service = require('./../services/DataService')
@@ -64,9 +63,23 @@ module.exports = new class Order {
         }
     };
 
+    _getAllStatus(data) {
+        try{
+
+            const arrayStatus = data.map( element => element.status)
+
+            const arrayUnique = [...new Set(arrayStatus)]
+
+            return arrayUnique
+
+        } catch(e){
+            return []
+        }
+    }
+
     async _getAllStatusQuantidade(arrayStatus){
         const retorno = []
-        await this._asyncForEach(arrayStatus, element =>
+        await utils._asyncForEach(arrayStatus, element =>
             this.orderTotal(element).then( response => {
                 let obj = {}
                 obj.status = element
@@ -77,14 +90,6 @@ module.exports = new class Order {
         )
         return retorno
     }
-
-    
-    async _asyncForEach(array, callback) {
-        for (let index = 0; index < array.length; index++) {
-            await callback(array[index], index, array)
-        }
-    }
-
     
     async groupByCountry() {
         try{
@@ -118,38 +123,6 @@ module.exports = new class Order {
             return false
         }
     };
-    
-    // _mountReturn(arrayStatus){
-    //     try{
-    //         const retorno = []
-            
-    //         arrayStatus.forEach(element => {
-    //             let obj = {
-    //                 status: element,
-    //                 quantidade: 0
-    //             }
-    //             retorno.push(obj)
-    //         });
-
-    //         return retorno
-    //     }catch(e){
-    //         return []
-    //     }
-    // }
-
-    _getAllStatus(data) {
-        try{
-
-            const arrayStatus = data.map( element => element.status)
-
-            const arrayUnique = [...new Set(arrayStatus)]
-
-            return arrayUnique
-
-        } catch(e){
-            return []
-        }
-    }
 
     _getAllCountrys(data){
         try{

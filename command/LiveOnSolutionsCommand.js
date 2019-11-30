@@ -54,7 +54,9 @@ module.exports = new class Order {
             const arrayStatus = this._getAllStatus(arrayData)
             
             const quantidades = await this._getAllStatusQuantidade(arrayStatus)
-            return quantidades
+
+            const arrayOrdenado = _.orderBy(quantidades, ['quantidade'],['desc']);
+            return arrayOrdenado
             
         } catch(e) {
             console.error(e.toString())
